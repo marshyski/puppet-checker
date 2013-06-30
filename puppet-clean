@@ -1,0 +1,53 @@
+#!/bin/bash
+
+#Set generic variables
+GRP=`grep 'puppet' /etc/group | awk -F':' '{ print $1 }'`
+TMP="$HOME/ptmp"
+
+#Set puppet open source variables
+if [[ `find /etc | grep '/etc/puppet' | head -n 1` != "" ]]; then
+   PUPPET_DIR=`find /etc | grep '/etc/puppet' | head -n 1`
+   PUPPET_MOD=`find $PUPPET_DIR | grep 'modules' | head -n 1`
+   if [[ `which puppet 2>/dev/null` = "" ]]; then
+      echo "Could not find Puppet installed"
+      exit
+      elif [[ `which puppet 2>/dev/null` != "" ]]; then
+      PUPPET=`which puppet 2>/dev/null`
+   fi
+fi
+
+#Set puppet enterprise variables
+if [[ `find /etc | grep '/etc/pe-puppet' | head -n 1` != "" ]]; then
+   PUPPET_DIR=`find /etc | grep '/etc/puppet' | head -n 1`
+   PUPPET_MOD=`find $PUPPET_DIR | grep 'modules' | head -n 1`
+   if [[ `which pe-puppet 2>/dev/null` = "" ]]; then
+      echo "Could not find Puppet installed"
+      exit
+      elif [[ `which pe-puppet 2>/dev/null` != "" ]]; then
+      PUPPET=`which pe-puppet 2>/dev/null`
+   fi
+fi
+
+#Print puppet variables
+echo "puppet directory:  $PUPPET_DIR"
+echo "puppet modules:    $PUPPET_MOD"
+echo "puppet executable: $PUPPET"
+echo "puppet group:      $GRP"
+
+#Find every .pp file to clean up
+find $PUPPET_DIR | grep '\.pp' > $TMP
+
+chmod -f 0755 $PUPPET_MOD/*
+chgrp -f $GRP $PUPPET_MOD/*
+
+while read line; do
+   
+   #Remove trailing white space
+   sed -i 's/[ \t]*$//' $1 $line
+   chmod -f 0640 $line
+   chgrp -f $GRP $line
+   chmod -f 0755 `dirname $line`
+   chgrp -f $GRP `dirname $line`
+
+done < $TMP
+rm -f $TMP
