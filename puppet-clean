@@ -33,6 +33,7 @@ echo "puppet directory:  $PUPPET_DIR"
 echo "puppet modules:    $PUPPET_MOD"
 echo "puppet executable: $PUPPET"
 echo "puppet group:      $GRP"
+echo "Check out puppet-cleaner! https://github.com/santana/puppet-cleaner"
 
 #Find every .pp file to clean up
 find $PUPPET_DIR | grep '\.pp' > $TMP
