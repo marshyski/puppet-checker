@@ -1,4 +1,11 @@
 #!/bin/bash
+############################################
+## CREATED BY TIM SKI | MARSHYSKI(DOT)COM ##
+## MARSHYSKI[AT]GMAIL[DOT]COM             ##
+## SIMPLE MANIFESTS CLEANING              ##
+## 01JUL2013                              ##
+## TESTED ON RHEL 6                       ##
+############################################
 
 #Set generic variables
 GRP=`grep 'puppet' /etc/group | awk -F':' '{ print $1 }'`
@@ -34,6 +41,14 @@ echo "puppet modules:    $PUPPET_MOD"
 echo "puppet executable: $PUPPET"
 echo "puppet group:      $GRP"
 echo "Check out puppet-cleaner! https://github.com/santana/puppet-cleaner"
+
+#Use basic cleaning on one module
+if [[ $1 != "" ]]; then
+   sed -i 's/[ \t]*$//' $1 $1
+   chmod -f 0640 $1
+   chgrp -f $GRP $1
+   exit
+fi
 
 #Find every .pp file to clean up
 find $PUPPET_DIR | grep '\.pp' > $TMP
